@@ -2,7 +2,8 @@
 # This SDK is provide by Microsoft. I just use it for the delegated
 # authentication part. You can find it in http://www.microsoft.com/downloads/details.aspx?FamilyId=24195B4E-6335-4844-A71D-7D395D20E67B&displaylang=en
 #
-# Author: Hugo Baraúna (hugo.barauna@gmail.com)
+# Authors: Hugo Baraúna (hugo.barauna@gmail.com)
+#          Rodolfo Carvalho (rodolfo@umitproject.org) 
 #######################################################################
 
 
@@ -26,6 +27,7 @@ require 'base64'
 require 'openssl'
 require 'net/https'
 require 'rexml/document'
+require 'digest/sha2' unless defined?(OpenSSL::Digest::SHA256)
 
 class WindowsLiveLogin
 
