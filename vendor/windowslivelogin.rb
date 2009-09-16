@@ -870,7 +870,13 @@ class WindowsLiveLogin
       fatal("Error: signToken: Secret key was not set. Aborting.")
     end
     begin
-      digest = OpenSSL::Digest::SHA256.new
+      # Use preferably the OpenSSL module
+      if defined?(OpenSSL::Digest::SHA256)
+        digest = OpenSSL::Digest::SHA256.new
+      # If it is not present, replace it with Ruby Standard lib
+      else
+        digest = Digest::SHA.new(256)
+      end
       return OpenSSL::HMAC.digest(digest, signkey, token)
     rescue Exception => e
       debug("Error: signToken: Signing failed: #{token}, #{e}")
@@ -1077,7 +1083,15 @@ class WindowsLiveLogin
     begin
       fatal("Nil/empty secret.") if (secret.nil? or secret.empty?)
       key = prefix + secret
-      key = OpenSSL::Digest::SHA256.digest(key)
+      # Use preferably the OpenSSL module
+      if defined?(OpenSSL::Digest::SHA256)
+        key = OpenSSL::Digest::SHA256.digest(key)
+      # If it is not present, replace it with Ruby Standard lib
+      else
+        digest = Digest::SHA.new(256)
+        digest << key
+        key = digest.to_s
+      end
       return key[0..15]
     rescue Exception => e
       debug("Error: derive: #{e}")
