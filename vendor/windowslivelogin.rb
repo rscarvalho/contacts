@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #######################################################################
 # This SDK is provide by Microsoft. I just use it for the delegated
 # authentication part. You can find it in http://www.microsoft.com/downloads/details.aspx?FamilyId=24195B4E-6335-4844-A71D-7D395D20E67B&displaylang=en
@@ -27,6 +28,11 @@ require 'openssl'
 require 'net/https'
 require 'rexml/document'
 
+unless defined? OpenSSL::Digest::SHA256
+  require 'digest/sha2'
+  require 'hmac-sha2'
+end
+
 class WindowsLiveLogin
 
   #####################################################################
@@ -45,6 +51,7 @@ class WindowsLiveLogin
   # Otherwise, it tries to log the error message.
   #####################################################################
   def debug(error)
+    raise error
     return unless @debug
     return if error.nil? or error.empty?
     warn("Windows Live ID Authentication SDK #{error}")
@@ -714,11 +721,11 @@ class WindowsLiveLogin
       debug("Error: processConsent: Failed to parse query.")
       return
     end
-    action = query['action']
-    unless action == 'delauth'
-      debug("Warning: processConsent: query action ignored: #{action}.")
-      return
-    end
+    # action = query['action']
+    # unless action == 'delauth'
+    #   debug("Warning: processConsent: query action ignored: #{action}.")
+    #   return
+    # end
     responsecode = query['ResponseCode']
     unless responsecode == 'RequestApproved'
       debug("Error: processConsent: Consent was not successfully granted: #{responsecode}")
@@ -870,11 +877,16 @@ class WindowsLiveLogin
       fatal("Error: signToken: Secret key was not set. Aborting.")
     end
     begin
-      digest = OpenSSL::Digest::SHA256.new
-      return OpenSSL::HMAC.digest(digest, signkey, token)
+      if defined? OpenSSL::Digest::SHA256
+        digest = OpenSSL::Digest::SHA256.new
+        return OpenSSL::HMAC.digest(digest, signkey, token)
+      else
+        digest = Digest::SHA2.new(256)
+        return HMAC::SHA256.digest(signkey, token)
+      end
     rescue Exception => e
       debug("Error: signToken: Signing failed: #{token}, #{e}")
-      return
+      raise e # return
     end
   end
 
@@ -1077,11 +1089,15 @@ class WindowsLiveLogin
     begin
       fatal("Nil/empty secret.") if (secret.nil? or secret.empty?)
       key = prefix + secret
-      key = OpenSSL::Digest::SHA256.digest(key)
+      if defined? OpenSSL::Digest::SHA256
+        key = OpenSSL::Digest::SHA256.digest(key)
+      else
+        key = Digest::SHA256.digest(key)
+      end
       return key[0..15]
     rescue Exception => e
       debug("Error: derive: #{e}")
-      return
+      raise e
     end
   end
 

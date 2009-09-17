@@ -1,10 +1,18 @@
 windows_live:
-  appid: your_app_id
-  secret: your_app_secret_key
+  appid: 000000004801E835
+  secret: YCuXRhMXY7epen7WuwU4yqtj9aqSswy8
   security_algorithm: wsignin1.0
-  return_url: http://yourserver.com/your_return_url
-  policy_url: http://yourserver.com/you_policy_url
+  return_url: http://test11.communitysoftware.com/invitation/import/windows_live
+  policy_url: http://test11.communitysoftware.com/
 
 yahoo:
-  appid: your_app_id
-  secret: your_shared_secret
+  appid: D4t95oXIkY5EDrbkrmxrtX18OISOaaUWHaI-
+  secret: 552668b169c2b654b4244a3a7a9dc6a6
+
+
+aol:
+  dev_id: ro1MqHhdI_CrFWSe
+  return_url: http://test11.communitysoftware.com/invitation/import/aol
+  supported_ids:
+  - SN
+  - OID

@@ -6,7 +6,7 @@ require 'md5'
 require 'net/https'
 require 'uri'
 require 'yaml'
-require 'json' unless defined? ActiveSupport::JSON
+require 'json' unless defined?(ActiveSupport::JSON) and ActiveSupport::JSON.respond_to?(:decode)
 
 module Contacts
   # = How I can fetch Yahoo Contacts?
@@ -129,8 +129,8 @@ module Contacts
       path.match(/^(.+)&sig=(\w{32})$/)
       path_without_sig = $1
       sig = $2
-
-      if sig == MD5.hexdigest(path_without_sig + @secret)
+      hash = MD5.hexdigest(path_without_sig + @secret)
+      if sig == hash
         path.match(/token=(.+?)&/)
         @token = $1
         return true
@@ -212,7 +212,7 @@ module Contacts
     #
     def self.parse_contacts(json)
       contacts = []
-      people = if defined? ActiveSupport::JSON
+      people = if defined?(ActiveSupport::JSON) and ActiveSupport::JSON.respond_to?(:decode)
         ActiveSupport::JSON.decode(json)
       else
         JSON.parse(json)

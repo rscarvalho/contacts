@@ -85,8 +85,10 @@ module Contacts
     # the redirection POST from Windows Live
     #
     def process_consent(consent)
-      consent.strip!
-      consent = URI.unescape(consent)
+      if consent.is_a?(String)
+        consent.strip!
+        consent = URI.unescape(consent)
+      end
       @consent_token = @wll.processConsent(consent)
     end
     
