@@ -1,3 +1,5 @@
+# Author: Rodolfo Carvalho <rodolfo@nybusinesslink.com>
+
 require 'contacts'
 
 require 'rubygems'
