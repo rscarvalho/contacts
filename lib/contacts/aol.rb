@@ -40,7 +40,7 @@ module Contacts
       url.gsub!(/#id/, @dev_id)
       url.gsub!(/#token/, token)
       uri = URI.parse(url)
-      response = Net::HTTP::Request.start(uri.host, uri.port) do |http|
+      response = Net::HTTP.start(uri.host, uri.port) do |http|
         http.get("#{uri.path}?#{uri.query}")
       end
       
